@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Compteur Commons</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="src/app.js"></script>
+  </head>
+  <body data-kind="commons">
+    <a class="skip" href="#main">Aller au contenu</a>
+    <header>
+      <a class="brand" href="/"
+        ><span class="brand-icon" aria-hidden="true">▧</span>Compteur Commons</a
+      >
+      <nav aria-label="Navigation principale">
+        <button data-dialog="method">
+          Méthode <span aria-hidden="true">↗</span></button
+        ><button data-dialog="about">À propos</button
+        ><span class="version-switch"
+          ><a href="?v=1&demo=1">V1</a><a href="?v=2&demo=1">V2</a></span
+        >
+      </nav>
+    </header>
+    <main id="main">
+      <section class="intro">
+        <div>
+          <p class="eyebrow">
+            Collections numériques <span> / </span> Données publiques
+          </p>
+          <h1>Retrouver une collection<br /><em>sur Commons.</em></h1>
+        </div>
+        <p class="lead">
+          Repérez les fichiers liés à une bibliothèque numérique et consultez
+          leurs réutilisations.
+        </p>
+        <div class="ornament" aria-hidden="true">▧</div>
+      </section>
+      <div class="workspace">
+        <aside class="search-panel">
+          <div class="panel-heading">
+            <span class="step">01</span>
+            <h2>La recherche</h2>
+          </div>
+          <form id="search">
+            <label for="query">Bibliothèque numérique</label
+            ><input
+              id="query"
+              name="query"
+              placeholder="gallica.bnf.fr"
+              required
+              aria-describedby="query-help"
+            />
+            <p id="query-help" class="hint">
+              Un domaine ou le lien vers une notice.
+            </p>
+            <fieldset>
+              <legend>Rechercher</legend>
+              <label
+                ><input type="radio" name="mode" value="domain" checked /> Le
+                domaine entier</label
+              ><label
+                ><input type="radio" name="mode" value="url" /> Une URL
+                exacte</label
+              >
+            </fieldset>
+            <label for="limit">Fichiers à examiner</label
+            ><select id="limit">
+              <option value="50">50 fichiers</option>
+              <option value="100">100 fichiers</option>
+              <option value="500">500 fichiers</option>
+            </select>
+            <p class="hint">
+              La limite porte sur les fichiers examinés, avant classement.
+            </p>
+            <button class="primary" type="submit">
+              Lancer la recherche <span aria-hidden="true">↗</span></button
+            ><button id="stop" type="button" disabled>Arrêter</button>
+            <p id="error" role="alert" hidden></p>
+          </form>
+          <div class="search-foot">
+            <span class="small-label">À garder en tête</span>
+            <p>
+              Un fichier sur Commons et ses utilisations dans les wikis sont
+              deux mesures différentes.
+            </p>
+            <button data-dialog="method" class="text-button">
+              Comprendre le comptage →
+            </button>
+          </div>
+        </aside>
+        <section class="result-panel" aria-labelledby="results-title">
+          <div class="results-heading">
+            <div>
+              <span class="small-label">02 / Le relevé</span>
+              <h2 id="results-title">Fichiers repérés</h2>
+            </div>
+            <button id="export" disabled>Exporter le CSV ↓</button>
+          </div>
+          <p id="status" role="status">Prêt pour une recherche.</p>
+          <progress
+            id="progress"
+            value="0"
+            max="100"
+            hidden
+            aria-label="Progression de la recherche"
+          ></progress>
+          <div id="example" hidden>
+            Exemple fictif pour comparer les maquettes. Lancez une recherche
+            pour obtenir des données réelles.
+          </div>
+          <div id="notice" hidden></div>
+          <div id="metrics" class="metrics"></div>
+          <div
+            id="filters"
+            class="filters"
+            aria-label="Filtrer les résultats"
+          ></div>
+          <div id="results">
+            <div class="empty">
+              <span aria-hidden="true">⌕</span>
+              <h3>Quelle collection souhaitez-vous retrouver ?</h3>
+              <p>Renseignez un domaine pour lancer le relevé.</p>
+              <button id="demo" type="button">Voir un exemple fictif</button>
+            </div>
+          </div>
+          <p id="coverage" class="coverage"></p>
+        </section>
+      </div>
+      <footer>
+        <span>API publiques Wikimédia</span
+        ><span>Code MIT · Contenus CC BY-SA 4.0</span>
+      </footer>
+    </main>
+    <dialog id="method">
+      <div class="dialog-top">
+        <h2>Comment sont comptés les résultats ?</h2>
+        <button data-close aria-label="Fermer">×</button>
+      </div>
+      <p>
+        Les liens sont recherchés dans les pages de fichiers, puis classés selon
+        leur emplacement : source, institution ou ailleurs. Les modèles sont
+        développés par Commons avant cette lecture. Un lien en description n’est
+        pas une preuve de provenance. Les pages non lues restent visibles dans «
+        À vérifier ». Le relevé est limité aux liens indexés par l’API, au
+        moment de la recherche. Les fichiers sans lien vers le domaine peuvent
+        donc manquer.
+      </p>
+      <p>
+        Le relevé n’est pas une photographie exhaustive de toute la collection.
+        Il dépend de l’index des liens, de la version des pages et des accès
+        disponibles.
+      </p>
+      <a href="docs/AUDIT.md" target="_blank" rel="noopener"
+        >Lire les limites et les contrôles</a
+      >
+    </dialog>
+    <dialog id="about">
+      <div class="dialog-top">
+        <h2>À propos</h2>
+        <button data-close aria-label="Fermer">×</button>
+      </div>
+      <p>Retrouvez les autres outils sur Atlas.</p>
+      <a
+        href="https://mdenel.vercel.app/"
+        target="_blank"
+        rel="noopener noreferrer"
+        >Ouvrir Atlas dans un nouvel onglet ↗</a
+      >
+    </dialog>
+    <dialog id="detail">
+      <div class="dialog-top">
+        <h2>Détail du résultat</h2>
+        <button data-close aria-label="Fermer">×</button>
+      </div>
+      <div id="detail-content"></div>
+    </dialog>
+  </body>
+</html>
