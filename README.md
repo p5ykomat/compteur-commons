@@ -43,3 +43,9 @@ Une panne durable de l’API peut laisser un relevé partiel : les données reç
 ## Grandes collections
 
 Le choix **Tous les fichiers**, sélectionné par défaut, parcourt toutes les pages de résultats fournies par l’API, sans plafond de 500 fichiers. Les limites de 50, 100, 500, 1 000 et 3 000 restent disponibles. Le total apparaît dès la fin du repérage ; la lecture détaillée des notices continue ensuite et peut durer plusieurs dizaines de minutes pour une grande collection. Ce total porte sur les fichiers contenant un lien indexé, pas sur une provenance certifiée. L’écran affiche 100 fichiers à la fois avec un bouton pour en afficher davantage ; l’export contient tous les fichiers collectés.
+
+## Démo
+
+Une démonstration est disponible pour [tester le projet en ligne](https://compteur-commons.vercel.app/), sans installation.
+
+Une mise à disposition sur Toolforge est prévue. Le lien sera ajouté ici lorsqu’elle sera disponible.
