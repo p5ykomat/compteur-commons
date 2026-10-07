@@ -234,3 +234,45 @@ test("pause puis reprise : conserve les fichiers lus sans refaire les appels", a
   assert.equal(final.partial, false);
   assert.equal(parsed, 2);
 });
+
+test("collecte complète de plus de 3 000 fichiers, total avant lecture", async () => {
+  const run = createRun();
+  let calls = 0;
+  let finalCount = 0;
+  const result = await runSearch({
+    values: ["library.example"],
+    mode: "domain",
+    limit: 0,
+    run,
+    Parser: DOMParser,
+    request: async (api, params) => {
+      assert.equal(params.list, "exturlusage");
+      const offset = Number(params.eucontinue || 0);
+      calls++;
+      return {
+        query: {
+          exturlusage: Array.from({ length: 100 }, (_, i) => ({
+            ns: 6,
+            title: `File:${offset + i}.jpg`,
+            pageid: offset + i,
+            url: "https://library.example/item",
+          })),
+        },
+        ...(offset < 3000
+          ? { continue: { eucontinue: String(offset + 100) } }
+          : {}),
+      };
+    },
+    onCheckpoint: (state, snapshot) => {
+      if (snapshot.discoveryComplete) {
+        finalCount = snapshot.files.length;
+        run.abort();
+      }
+    },
+  });
+  assert.equal(calls, 31);
+  assert.equal(finalCount, 3100);
+  assert.equal(result.truncated, false);
+  assert.equal(result.discoveryComplete, true);
+  assert.equal(result.partial, true);
+});

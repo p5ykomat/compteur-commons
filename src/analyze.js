@@ -67,7 +67,7 @@ export function classifyCommonsHtml(html, query, Parser) {
 export async function runSearch({
   values,
   mode,
-  limit = 50,
+  limit = 0,
   run,
   update = () => {},
   request = mediaWikiRequest,
@@ -112,6 +112,7 @@ export async function runSearch({
       scannedAt: new Date(),
       startedAt: state.startedAt,
       candidateCount: state.files.length,
+      discoveryComplete: state.discoveryDone,
       partial,
       canResume: partial,
       collectionError: state.error,
@@ -146,7 +147,7 @@ export async function runSearch({
           });
         const f = files.get(row.title);
         if (!f.indexedUrls.includes(row.url)) f.indexedUrls.push(row.url);
-        if (files.size >= limit) {
+        if (limit > 0 && files.size >= limit) {
           state.truncated = Boolean(data.continue) || i < rows.length - 1;
           state.discoveryDone = true;
           break;

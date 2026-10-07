@@ -18,9 +18,7 @@
         <button data-dialog="method">
           Méthode <span aria-hidden="true">↗</span></button
         ><button data-dialog="about">À propos</button
-        ><span class="version-switch"
-          ><a href="?v=1&demo=1">V1</a><a href="?v=2&demo=1">V2</a></span
-        >
+        ><span class="version-switch" hidden></span>
       </nav>
     </header>
     <main id="main">
@@ -67,12 +65,17 @@
             </fieldset>
             <label for="limit">Fichiers à examiner</label
             ><select id="limit">
+              <option value="0" selected>Tous les fichiers</option>
               <option value="50">50 fichiers</option>
               <option value="100">100 fichiers</option>
               <option value="500">500 fichiers</option>
+              <option value="1000">1 000 fichiers</option>
+              <option value="3000">3 000 fichiers</option>
             </select>
             <p class="hint">
-              La limite porte sur les fichiers examinés, avant classement.
+              « Tous » poursuit le repérage jusqu’au dernier lien fourni par
+              l’API. La lecture détaillée des notices peut ensuite prendre du
+              temps.
             </p>
             <button class="primary" type="submit">
               Lancer la recherche <span aria-hidden="true">↗</span></button

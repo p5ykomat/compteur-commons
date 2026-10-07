@@ -2,7 +2,7 @@
 
 Repérer les fichiers Commons liés à une bibliothèque numérique, comprendre où le lien est présent et consulter leurs usages dans les wikis.
 
-**Version de travail. Deux directions graphiques locales sont proposées avant le choix de la version finale. Aucun nouveau site n’a été déployé.**
+Interface blanche et bleue (V2). Site : https://compteur-commons.vercel.app/
 
 ## Essayer sur son ordinateur
 
@@ -15,9 +15,7 @@ npm run dev
 
 Ouvrir l’adresse locale indiquée dans le terminal. Aucun compte ni clé API nécessaire. Les requêtes partent du navigateur vers les API publiques Wikimédia.
 
-- `/?v=1` : direction éditoriale, ivoire et brun.
-- `/?v=2` : direction studio, blanc et bleu.
-- Ajouter `&demo=1` pour afficher un exemple **fictif**, sans requête aux API.
+Ajouter `?demo=1` pour afficher un exemple **fictif**, sans requête aux API.
 
 ## Comprendre le résultat
 
@@ -43,3 +41,7 @@ Les appels sont séquentiels, avec une pause d’au moins une seconde après cha
 **Mettre en pause** conserve l’avancement. **Reprendre le relevé** poursuit la collecte sans recommencer les pages déjà reçues. Le dernier relevé est sauvegardé dans ce navigateur et peut être restauré pendant 24 heures, même après un rechargement. Une nouvelle recherche repart de zéro pour actualiser les données. Si le stockage du navigateur est plein ou interdit, la reprise reste disponible tant que la page demeure ouverte.
 
 Une panne durable de l’API peut laisser un relevé partiel : les données reçues restent consultables et exportables, avec cette limite indiquée. Aucun résultat manquant n’est remplacé par un chiffre inventé.
+
+## Grandes collections
+
+Le choix **Tous les fichiers**, sélectionné par défaut, parcourt toutes les pages de résultats fournies par l’API, sans plafond de 500 fichiers. Les limites de 50, 100, 500, 1 000 et 3 000 restent disponibles. Le total apparaît dès la fin du repérage ; la lecture détaillée des notices continue ensuite et peut durer plusieurs dizaines de minutes pour une grande collection. Ce total porte sur les fichiers contenant un lien indexé, pas sur une provenance certifiée. L’écran affiche 100 fichiers à la fois avec un bouton pour en afficher davantage ; l’export contient tous les fichiers collectés.
