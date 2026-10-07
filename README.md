@@ -2,8 +2,6 @@
 
 Repérer les fichiers Commons liés à une bibliothèque numérique, comprendre où le lien est présent et consulter leurs usages dans les wikis.
 
-Interface blanche et bleue (V2). Site : https://compteur-commons.vercel.app/
-
 ## Essayer sur son ordinateur
 
 Installer une version récente de Node.js (22 ou 24), télécharger ce dépôt et ouvrir un terminal dans son dossier :
