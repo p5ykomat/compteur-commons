@@ -189,3 +189,48 @@ test("réutilisations paginées et dédoublonnées par wiki et page", async () =
     2,
   );
 });
+
+test("pause puis reprise : conserve les fichiers lus sans refaire les appels", async () => {
+  let checkpoint,
+    parsed = 0;
+  const run = createRun();
+  const request = async (api, p) =>
+    p.action === "parse"
+      ? (parsed++, { parse: { text: `<h2>Source</h2>${a}`, revid: 1 } })
+      : {
+          query: {
+            exturlusage: [
+              { ns: 6, title: "File:A", url: "https://library.example/item/1" },
+              { ns: 6, title: "File:B", url: "https://library.example/item/2" },
+            ],
+          },
+        };
+  const first = await runSearch({
+    values: ["library.example"],
+    mode: "domain",
+    run,
+    request,
+    Parser: DOMParser,
+    onCheckpoint: (state) => {
+      checkpoint = structuredClone(state);
+      if (parsed === 1) run.abort();
+    },
+  });
+  assert.equal(first.canResume, true);
+  assert.equal(parsed, 1);
+  const final = await runSearch({
+    values: ["library.example"],
+    mode: "domain",
+    run: createRun(),
+    request: async (api, p) => {
+      assert.equal(p.action, "parse");
+      assert.equal(p.page, "File:B");
+      return request(api, p);
+    },
+    Parser: DOMParser,
+    checkpoint,
+  });
+  assert.equal(final.files.length, 2);
+  assert.equal(final.partial, false);
+  assert.equal(parsed, 2);
+});

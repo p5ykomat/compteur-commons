@@ -48,3 +48,7 @@ Ces contrôles ne démontrent pas l’absence de toute erreur. Les index et les 
 - [API des liens externes](https://www.mediawiki.org/wiki/API:Exturlusage)
 - [API de rendu des pages](https://www.mediawiki.org/wiki/API:Parsing_wikitext)
 - [Réutilisation globale des fichiers](https://www.mediawiki.org/wiki/Extension:GlobalUsage)
+
+## Résistance aux interruptions
+
+Requêtes espacées, pagination par 100 liens, respect de Retry-After et attente progressive en cas de limitation. Sauvegarde après chaque page de résultats et chaque lecture de fichier. La reprise évite de relire les pages déjà collectées. Les tests couvrent une réponse 429 suivie d’un succès, une panne 503 persistante et une collecte interrompue puis reprise. Une indisponibilité durable reste affichée comme un relevé partiel.

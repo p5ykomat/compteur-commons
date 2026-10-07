@@ -72,49 +72,101 @@ export async function runSearch({
   update = () => {},
   request = mediaWikiRequest,
   Parser,
+  checkpoint,
+  onCheckpoint = () => {},
 }) {
-  const query = normalizeQuery(values[0], mode);
-  const files = new Map();
-  let continuation = null;
-  let truncated = false;
-  do {
-    run.status(`Repérage des fichiers : ${files.size}`);
-    const data = await request(
-      API,
-      {
-        list: "exturlusage",
-        euprop: "ids|title|url",
-        eulimit: "max",
-        eunamespace: 6,
-        euquery: query.apiQuery,
-        ...(continuation || {}),
-      },
-      run,
+  const query = normalizeQuery(values[0], mode),
+    signature = JSON.stringify([query.mode, query.display, limit]);
+  const state =
+    checkpoint?.signature === signature
+      ? checkpoint
+      : {
+          signature,
+          files: [],
+          read: {},
+          continuation: null,
+          discoveryDone: false,
+          truncated: false,
+          startedAt: new Date().toISOString(),
+        };
+  delete state.error;
+  function snapshot() {
+    const files = state.files.map(
+      (f) =>
+        state.read[f.title] || {
+          ...f,
+          status: "unverified",
+          evidence: [],
+          url: pageUrl("https://commons.wikimedia.org", f.title),
+          error: "Lecture en attente.",
+        },
     );
-    const rows = data.query?.exturlusage || [];
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      if (row.ns !== 6 || !row.title || !query.matches(row.url)) continue;
-      if (!files.has(row.title))
-        files.set(row.title, {
-          title: row.title,
-          pageid: row.pageid,
-          indexedUrls: [],
-        });
-      const file = files.get(row.title);
-      if (!file.indexedUrls.includes(row.url)) file.indexedUrls.push(row.url);
-      if (files.size >= limit) {
-        truncated = Boolean(data.continue) || i < rows.length - 1;
-        break;
+    const partial =
+      !state.discoveryDone ||
+      Boolean(state.error) ||
+      files.some((f) => f.error);
+    return {
+      query,
+      files,
+      truncated: state.truncated,
+      scannedAt: new Date(),
+      startedAt: state.startedAt,
+      candidateCount: state.files.length,
+      partial,
+      canResume: partial,
+      collectionError: state.error,
+    };
+  }
+  const save = () => onCheckpoint(state, snapshot());
+  const files = new Map(state.files.map((f) => [f.title, f]));
+  try {
+    while (!state.discoveryDone && !run.aborted) {
+      run.status(`Repérage des fichiers : ${files.size}`);
+      const data = await request(
+        API,
+        {
+          list: "exturlusage",
+          euprop: "ids|title|url",
+          eulimit: 100,
+          eunamespace: 6,
+          euquery: query.apiQuery,
+          ...(state.continuation || {}),
+        },
+        run,
+      );
+      const rows = data.query?.exturlusage || [];
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        if (row.ns !== 6 || !row.title || !query.matches(row.url)) continue;
+        if (!files.has(row.title))
+          files.set(row.title, {
+            title: row.title,
+            pageid: row.pageid,
+            indexedUrls: [],
+          });
+        const f = files.get(row.title);
+        if (!f.indexedUrls.includes(row.url)) f.indexedUrls.push(row.url);
+        if (files.size >= limit) {
+          state.truncated = Boolean(data.continue) || i < rows.length - 1;
+          state.discoveryDone = true;
+          break;
+        }
       }
+      state.files = [...files.values()];
+      state.continuation = continuationParams(data);
+      if (!state.continuation) state.discoveryDone = true;
+      save();
     }
-    continuation = truncated ? null : continuationParams(data);
-  } while (continuation);
-  const results = [];
+  } catch (e) {
+    state.error = run.aborted ? "Relevé mis en pause." : e.message;
+    save();
+  }
   let n = 0;
-  for (const file of files.values()) {
-    if (run.aborted) throw new Error("Analyse arrêtée.");
-    run.status(`Lecture des pages : ${++n} / ${files.size}`);
+  for (const file of state.files) {
+    if (run.aborted) break;
+    n++;
+    if (state.read[file.title] && !state.read[file.title].error) continue;
+    run.status(`Lecture des pages : ${n} / ${state.files.length}`);
     try {
       const data = await request(
         API,
@@ -128,31 +180,30 @@ export async function runSearch({
       );
       if (typeof data.parse?.text !== "string")
         throw new Error("Page non lisible.");
-      results.push({
+      state.read[file.title] = {
         ...file,
         ...classifyCommonsHtml(data.parse.text, query, Parser),
         revision: data.parse.revid,
         url: pageUrl("https://commons.wikimedia.org", file.title),
-      });
-    } catch (error) {
-      if (run.aborted) throw error;
-      results.push({
+      };
+    } catch (e) {
+      state.read[file.title] = {
         ...file,
         status: "unverified",
         evidence: [],
-        error: error.message,
+        error: run.aborted ? "Lecture mise en pause." : e.message,
         url: pageUrl("https://commons.wikimedia.org", file.title),
-      });
+      };
+      if (run.aborted) {
+        save();
+        break;
+      }
     }
-    update(n, files.size);
+    update(n, state.files.length);
+    save();
   }
-  return {
-    query,
-    files: results,
-    truncated,
-    scannedAt: new Date(),
-    candidateCount: files.size,
-  };
+  save();
+  return snapshot();
 }
 
 export async function loadUsage(file, run, request = mediaWikiRequest) {
