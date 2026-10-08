@@ -1,4 +1,5 @@
 export const english = {
+  "Projet personnel": "Personal project",
   "Aller au contenu": "Skip to content",
   "Compteur Commons": "Commons Collection",
   "Navigation principale": "Main navigation",

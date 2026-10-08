@@ -11,7 +11,6 @@ import {
 const $ = (s) => document.querySelector(s),
   kind = document.body.dataset.kind,
   isCommons = kind === "commons";
-document.body.classList.add("v2");
 initLanguage();
 const labels = {
   source: t("Lien dans la source"),

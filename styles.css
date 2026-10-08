@@ -556,6 +556,8 @@ input[type="radio"] {
 }
 footer {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
   justify-content: space-between;
   padding: 20px 0 25px;
   border-top: 1px solid var(--line);
