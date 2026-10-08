@@ -1,5 +1,9 @@
 # Revue better-interface quick
 
+## Version bilingue et Toolforge
+
+Recherche, détail des liens, usages et téléchargement CSV vérifiés dans les deux langues avec des réponses API simulées. Le changement de langue conserve le résultat sauvegardé et la saisie. Titres et extraits des sources préservés. Navigation des dialogues au clavier, contrôle axe sans anomalie sur ces parcours et absence de débordement à 390 px. Vérification visuelle à 1440 px. Le serveur de production refuse les fichiers du dépôt hors du dossier public et fournit les en-têtes de sécurité. La disponibilité effective sur Toolforge reste à vérifier après déploiement.
+
 ## Périmètre
 
 V2 retenue, recherche, résultats, détail, méthode et export. HTML et CSS natifs, JavaScript modulaire. Cette revue locale ne valide pas la disponibilité permanente des services externes.

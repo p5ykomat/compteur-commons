@@ -1,6 +1,12 @@
-# Compteur Commons
+# Commons Collection
+
+Find Wikimedia Commons files linked to a digital library, inspect the location of the links and explore file reuse. The interface is available in English and French, with a language selector. Source titles and excerpts remain in their original language.
+
+For Toolforge installation and updates, see the [deployment guide](docs/TOOLFORGE.md).
 
 Repérer les fichiers Commons liés à une bibliothèque numérique, comprendre où le lien est présent et consulter leurs usages dans les wikis.
+
+L’interface est disponible en français et en anglais. La langue du navigateur est utilisée au premier accès, puis le choix est mémorisé. Le changement de langue recharge la page et conserve le relevé sauvegardé. Pendant une collecte, mettre en pause avant de changer de langue.
 
 ## Essayer sur son ordinateur
 

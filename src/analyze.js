@@ -1,3 +1,4 @@
+import { t } from "./i18n.js";
 import { mediaWikiRequest, continuationParams } from "./mediawiki.js";
 import { normalizeQuery, pageUrl } from "./utils.js";
 import {
@@ -98,7 +99,7 @@ export async function runSearch({
           status: "unverified",
           evidence: [],
           url: pageUrl("https://commons.wikimedia.org", f.title),
-          error: "Lecture en attente.",
+          error: t("Lecture en attente."),
         },
     );
     const partial =
@@ -122,7 +123,7 @@ export async function runSearch({
   const files = new Map(state.files.map((f) => [f.title, f]));
   try {
     while (!state.discoveryDone && !run.aborted) {
-      run.status(`Repérage des fichiers : ${files.size}`);
+      run.status(t`Repérage des fichiers : ${files.size}`);
       const data = await request(
         API,
         {
@@ -159,7 +160,7 @@ export async function runSearch({
       save();
     }
   } catch (e) {
-    state.error = run.aborted ? "Relevé mis en pause." : e.message;
+    state.error = run.aborted ? t("Relevé mis en pause.") : e.message;
     save();
   }
   let n = 0;
@@ -167,7 +168,7 @@ export async function runSearch({
     if (run.aborted) break;
     n++;
     if (state.read[file.title] && !state.read[file.title].error) continue;
-    run.status(`Lecture des pages : ${n} / ${state.files.length}`);
+    run.status(t`Lecture des pages : ${n} / ${state.files.length}`);
     try {
       const data = await request(
         API,
@@ -180,7 +181,7 @@ export async function runSearch({
         run,
       );
       if (typeof data.parse?.text !== "string")
-        throw new Error("Page non lisible.");
+        throw new Error(t("Page non lisible."));
       state.read[file.title] = {
         ...file,
         ...classifyCommonsHtml(data.parse.text, query, Parser),
@@ -192,7 +193,7 @@ export async function runSearch({
         ...file,
         status: "unverified",
         evidence: [],
-        error: run.aborted ? "Lecture mise en pause." : e.message,
+        error: run.aborted ? t("Lecture mise en pause.") : e.message,
         url: pageUrl("https://commons.wikimedia.org", file.title),
       };
       if (run.aborted) {

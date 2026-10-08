@@ -1,6 +1,8 @@
 * {
   box-sizing: border-box;
 }
+.language-picker { display: flex; align-items: center; gap: 8px; font-size: 13px; flex-wrap: wrap; }
+.language-picker select { width: auto; min-height: 44px; padding: 8px; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; }
 :root {
   --paper: #f4f0e8;
   --surface: #fffdf8;
